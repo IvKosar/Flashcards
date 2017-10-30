@@ -1,0 +1,1 @@
+This project automates process of creating set of words in Quizlet from dictionary
