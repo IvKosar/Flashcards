@@ -8,15 +8,27 @@ OUT_PATH = os.environ.get("OUT_PATH")
 ZIP_ARCHIVE = os.environ.get("ZIP_ARCHIVE")
 FILENAME = os.environ.get("FILENAME")
 
-def read_document():
-    with ZipFile(BASE_DIR + 'modules/' + OUT_PATH + ZIP_ARCHIVE) as myzip:
+def read_zip_archive():
+    with ZipFile(BASE_DIR + OUT_PATH + ZIP_ARCHIVE) as myzip:
         if not os.path.exists(OUT_PATH + FILENAME):
             myzip.extract(FILENAME, OUT_PATH)
         with myzip.open(FILENAME) as file:
             return file.read()
 
+def read_document(filename):
+    with open(filename) as infile:
+        outfile = open(BASE_DIR + OUT_PATH + 'cards.csv', 'a')
+        for line in infile.readlines():
+            if line:
+                new_line = line.strip().split()
+                n = len(new_line)
+                german = new_line[0].lower() + ' ' + new_line[1]
+                ukrainian = new_line[-1] if n  == 3 else ' '.join(new_line[-2:])
+                outfile.write(german + ';' + ukrainian + '\n')
+        outfile.close()
+
 def parse(html_doc, only_english=1):
-    languages = (3,2)
+    #languages = (3,2)
     table = SoupStrainer("tbody")
     soup = BeautifulSoup(html_doc, "html.parser", parse_only=table)
 
@@ -38,7 +50,7 @@ def parse(html_doc, only_english=1):
 
 
 def write_data(dictionary):
-    with open(BASE_DIR + 'modules/' + OUT_PATH + "cards.csv", 'w') as file:
+    with open(BASE_DIR + OUT_PATH + "cards.csv", 'w') as file:
         for key in dictionary:
             line = key + ";" + dictionary[key] + '\n'
             file.write(line)

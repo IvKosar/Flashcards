@@ -63,8 +63,8 @@ def download_file(drive_service, file_id):
     request = drive_service.files().export_media(fileId=file_id,
                                                  mimeType='application/zip')
     os.chdir("..")
-    if os.path.exists("data"):
-        os.removedirs("data")
+    '''if os.path.exists("data"):
+        os.removedirs("data")'''
     os.makedirs("data")
 
     fh = io.FileIO("data/Vocabelheft.zip", "wb")
