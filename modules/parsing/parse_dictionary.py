@@ -7,6 +7,7 @@ BASE_DIR = os.environ.get("BASE_DIR")
 OUT_PATH = os.environ.get("OUT_PATH")
 ZIP_ARCHIVE = os.environ.get("ZIP_ARCHIVE")
 FILENAME = os.environ.get("FILENAME")
+DATA_DIR = os.environ.get("DATA_DIR")
 
 def read_zip_archive():
     with ZipFile(BASE_DIR + OUT_PATH + ZIP_ARCHIVE) as myzip:
@@ -27,12 +28,26 @@ def read_document(filename):
                 outfile.write(german + ';' + ukrainian + '\n')
         outfile.close()
 
-def parse(html_doc, only_english=1):
-    #languages = (3,2)
+
+def get_last_row_num():
+    with open(BASE_DIR + DATA_DIR + 'last_row') as file:
+        try:
+            return int(file.read())
+        except ValueError:
+            print("Wrong data in file with last row number")
+
+def parse(html_doc, last_row_num,only_english=1):
     table = SoupStrainer("tbody")
     soup = BeautifulSoup(html_doc, "html.parser", parse_only=table)
 
+    # go through lines until reach the first non added to dictionary
     line = soup.tr
+    count = 0
+    while count < last_row_num:
+        line = line.next_sibling
+        count += 1
+
+    # parse the row for german and english or ukrainian words
     dictionary = {}
     while line.next_sibling:
         line = line.next_sibling
@@ -45,6 +60,11 @@ def parse(html_doc, only_english=1):
         if not german:
             continue
         dictionary[german] = other
+
+        count += 1
+
+    with open(BASE_DIR + DATA_DIR + "last_row", 'w') as file:
+        file.write(str(count))
 
     return dictionary
 

@@ -65,9 +65,9 @@ def download_file(drive_service, file_id):
     os.chdir("..")
     '''if os.path.exists("data"):
         os.removedirs("data")'''
-    os.makedirs("data")
+    os.makedirs("data/out")
 
-    fh = io.FileIO("data/Vocabelheft.zip", "wb")
+    fh = io.FileIO("data/out/Vocabelheft.zip", "wb")
     downloader = MediaIoBaseDownload(fh, request)
     done = False
     while done is False:
